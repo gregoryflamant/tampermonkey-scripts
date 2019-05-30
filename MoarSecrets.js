@@ -9,7 +9,7 @@
 // ==/UserScript==
 
 // SET THIS VARIABLE TO TRUE IF YOU WANT TO SEE MESSAGES IN CONSOLE
-let DEBUG = true;
+let DEBUG = false;
 let currentInterval = null;
 let secretsLoaded = false;
 let retry = 0;
