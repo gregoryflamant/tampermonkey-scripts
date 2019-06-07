@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         MoarSecrets
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.2
 // @description  try to take over the world!
 // @author       Grégory-William Flamant
 // @match        *://portal.azure.com/*
 // @grant        none
 // ==/UserScript==
 
-// SET THIS VARIABLE TO TRUE IF YOU WANT TO SEE MESSAGES IN CONSOLE
+// SET THIS VARIABLE TO TRUE IF YOU WANT TO SEE MESSAGES IN CONSOLE TESTESTETSTEZTTSETS
 let DEBUG = true;
 let currentInterval = null;
 let secretsLoaded = false;
