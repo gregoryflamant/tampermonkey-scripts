@@ -98,6 +98,7 @@ function removeSearchBar() {
 }
 
 function removeDownloadBtn() {
+    $('#searchKV').off();
     $('#downloadBtnContainer').detach();
 }
 
