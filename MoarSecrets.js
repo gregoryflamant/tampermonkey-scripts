@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MoarSecrets
 // @namespace    http://tampermonkey.net/
-// @version      2.4
+// @version      2.5
 // @description  try to take over the world!
 // @author       Grégory-William Flamant
 // @match        *://portal.azure.com/*
@@ -93,16 +93,17 @@ function addSearchBar() {
 }
 
 function removeSearchBar() {
-    $('#searchKVContainer').detach();
-    $('#resultCount').detach();
+    $('#searchKVContainer').remove();
+    $('#resultCount').remove();
 }
 
 function removeDownloadBtn() {
     $('#searchKV').off();
-    $('#downloadBtnContainer').detach();
+    $('#downloadBtnContainer').remove();
 }
 
 function searchKV(valueToSearch) {
+    if(DEBUG) console.log(`Value to search: ${valueToSearch}`);
     if(valueToSearch === "") {
         $('.azc-grid-groupdata tr').show();
         displayResultsCounted(0);
