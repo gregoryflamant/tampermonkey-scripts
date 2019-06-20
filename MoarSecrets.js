@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MoarSecrets
 // @namespace    http://tampermonkey.net/
-// @version      2.5
+// @version      2.7
 // @description  try to take over the world!
 // @author       Grégory-William Flamant
 // @match        *://portal.azure.com/*
@@ -65,7 +65,7 @@ function windowCheck () {
 }
 
 
-const downloadBtn = '<div id="downloadBtnContainer" class="azc-formElementSubLabelContainer fxs-commandBar-item fxs-commandBar-item fxs-portal-border msportalfx-command-like-button fxs-portal-hover"><div data-control="true" class="fxs-commandBar-item-buttoncontainer" data-editable="true" data-canfocus="true"><div class="fxs-commandBar-item-icon" data-bind="image: icon"><svg height="100%" width="100%" aria-hidden="true" role="presentation" focusable="false"><use href="#FxSymbol0-018"></use></svg></div><div id="downloadBtn" class="fxs-commandBar-item-text msportalfx-tooltip-overflow">Download secrets</div></div></div></div></div>'
+const downloadBtn = '<div id="downloadBtnContainer" class="azc-formElementSubLabelContainer fxs-commandBar-item fxs-commandBar-item fxs-portal-border msportalfx-command-like-button fxs-portal-hover"><div data-control="true" class="fxs-commandBar-item-buttoncontainer" data-editable="true" data-canfocus="true"><div class="fxs-commandBar-item-icon" data-bind="image: icon"><svg height="100%" width="100%" aria-hidden="true" role="presentation" focusable="false"><use href="#FxSymbol0-018"></use></svg></div><div id="downloadBtn" class="fxs-commandBar-item-text">Download secrets names</div></div></div></div></div>'
 
 const commandBar = '<div id="searchKVContainer" class="azc-formElementSubLabelContainer"><div class="azc-formElementContainer"><div class="fxc-base azc-control azc-editableControl azc-validatableControl azc-inputbox azc-textBox azc-validatableControl-none" data-control="true" data-editable="true" data-canfocus="true"><div class="azc-inputbox-wrapper azc-textBox-wrapper" tabindex="-1"><input id="searchKV" class="azc-input azc-formControl azc-validation-border" type="text" aria-multiline="false" placeholder="Filter by secret name..."><label class="fxs-hide-accessible-label" aria-atomic="true"></label></div></div></div><label class="azc-text-sublabel msportalfx-tooltip-overflow" data-bind="untrustedContent: $data" aria-hidden="true"></label></div></div>'
 
@@ -74,7 +74,7 @@ function addDownloadBtn() {
         $('.fxs-commandBar > ul').append(downloadBtn);
 
         $('#downloadBtn').on('click',function(e) {
-            console.log('cliiiiick');
+            downloadKV();
         });
     }
 }
@@ -93,13 +93,13 @@ function addSearchBar() {
 }
 
 function removeSearchBar() {
-    $('#searchKVContainer').remove();
+    $('div[id="searchKVContainer"]').remove();
     $('#resultCount').remove();
 }
 
 function removeDownloadBtn() {
     $('#searchKV').off();
-    $('#downloadBtnContainer').remove();
+    $('div[id="downloadBtnContainer"]').remove();
 }
 
 function searchKV(valueToSearch) {
@@ -121,6 +121,23 @@ function displayResultsCounted(count) {
     } else {
         $("#resultCount").text(`${count} result(s)`);
     }
+}
+
+function downloadKV() {
+    let keyvaults = $('.azc-grid-groupdata tr td:first-child');
+    let kvAsString = "";
+    for(let i = 0; i < keyvaults.length; i++) {
+        kvAsString += keyvaults[i].innerText + ';';
+    }
+
+    var hiddenElement = document.createElement('a');
+    const fileName = $('.fxs-blade-title h2').text() + '.txt';
+
+    hiddenElement.href = 'data:attachment/text,' + encodeURI(kvAsString);
+    hiddenElement.target = '_blank';
+    hiddenElement.download = fileName;
+    hiddenElement.click();
+    document.remove(hiddenElement);
 }
 
 
