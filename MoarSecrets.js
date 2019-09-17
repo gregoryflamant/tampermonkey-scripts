@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MoarSecrets
 // @namespace    http://tampermonkey.net/
-// @version      2.7.1
+// @version      2.7.2
 // @author       Grégory-William Flamant
 // @match        *://portal.azure.com/*
 // @match        *://*.portal.azure.com/*
@@ -9,7 +9,7 @@
 // ==/UserScript==
 
 // SET THIS VARIABLE TO TRUE IF YOU WANT TO SEE MESSAGES IN CONSOLE
-const DEBUG = true;
+let DEBUG = true;
 let currentInterval = null;
 let secretsLoaded = false;
 let retry = 0;
@@ -76,35 +76,44 @@ const downloadBtn = '<div id="downloadBtnContainer" class="azc-formElementSubLab
 const commandBar = '<div id="searchKVContainer" class="azc-formElementSubLabelContainer"><div class="azc-formElementContainer"><div class="fxc-base azc-control azc-editableControl azc-validatableControl azc-inputbox azc-textBox azc-validatableControl-none" data-control="true" data-editable="true" data-canfocus="true"><div class="azc-inputbox-wrapper azc-textBox-wrapper" tabindex="-1"><input id="searchKV" class="azc-input azc-formControl azc-validation-border" type="text" aria-multiline="false" placeholder="Filter by secret name..."><label class="fxs-hide-accessible-label" aria-atomic="true"></label></div></div></div><label class="azc-text-sublabel msportalfx-tooltip-overflow" data-bind="untrustedContent: $data" aria-hidden="true"></label></div></div>'
 
 function addDownloadBtn() {
-    if($('div[id="downloadBtnContainer"]').length === 0) {
-        $('.fxs-commandBar > ul').append(downloadBtn)
-
-        $('#downloadBtn').on('click',function(e) {
-            downloadKV();
-        });
+    if($('div[id="downloadBtnContainer"]').length > 0) {
+        if(DEBUG) console.log(`Length of download button Container : ${$('div[id="downloadBtnContainer"]').length}`);
+        removeDownloadBtn();
     }
+
+    $('.fxs-commandBar > ul').append(downloadBtn);
+
+    $('#downloadBtn').on('click',function(e) {
+        downloadKV();
+    });
 }
 
 function addSearchBar() {
-    if($('div[id="searchKVContainer"]').length === 0) {
-        $('.fxs-commandBar > ul')
-            .append(commandBar)
-            .append('<a id="resultCount"></a>');
-
-        $('#searchKV').on('keypress',function(e) {
-            if(e.which == 13) {
-                searchKV($(this).val());
-            }
-        });
+    if($('div[id="searchKVContainer"]').length > 0) {
+        if(DEBUG) console.log(`Length of search KV Container : ${$('div[id="searchKVContainer"]').length}`);
+        removeSearchBar();
     }
+
+    $('.fxs-commandBar > ul')
+        .append(commandBar)
+        .append('<a id="resultCount"></a>');
+
+    $('#searchKV').on('keypress',function(e) {
+        if(e.which == 13) {
+            searchKV($(this).val());
+        }
+    });
+
 }
 
 function removeSearchBar() {
+    if(DEBUG) console.log("Invoke removeSearchBar()");
     $('div[id="searchKVContainer"]').remove();
     $('#resultCount').remove();
 }
 
 function removeDownloadBtn() {
+    if(DEBUG) console.log("Invoke removeDownloadBtn()");
     $('#searchKV').off();
     $('div[id="downloadBtnContainer"]').remove();
 }
