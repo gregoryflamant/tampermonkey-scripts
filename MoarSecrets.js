@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         MoarSecrets
+// @name         MoarSecrets_TEST
 // @namespace    http://tampermonkey.net/
-// @version      2.7.4
+// @version      2.7.5
 // @author       Grégory-William Flamant
 // @match        *://portal.azure.com/*
 // @run-at document-end
@@ -9,7 +9,8 @@
 // ==/UserScript==
 
 // SET THIS VARIABLE TO TRUE IF YOU WANT TO SEE MESSAGES IN CONSOLE
-const DEBUG = true;
+const DEBUG = false;
+
 let currentInterval = null;
 let secretsLoaded = false;
 let retry = 0;
@@ -59,31 +60,12 @@ function windowCheck () {
             if(DEBUG) console.log('Remove searchKV container');
             removeSearchBar();
         }
-
-        if($('div[id="downloadBtnContainer"]').length > 0) {
-            if(DEBUG) console.log('Remove download btn container');
-            removeDownloadBtn();
-        }
     } else {
         if(DEBUG) console.log('We are on a secret page and all secrets seems loaded...');
     }
 }
 
-const downloadBtn = '<div id="downloadBtnContainer" class="azc-formElementSubLabelContainer fxs-commandBar-item fxs-commandBar-item fxs-portal-border msportalfx-command-like-button fxs-portal-hover"><div data-control="true" class="fxs-commandBar-item-buttoncontainer" data-editable="true" data-canfocus="true"><div class="fxs-commandBar-item-icon" data-bind="image: icon"></div><div id="downloadBtn" class="fxs-commandBar-item-text">Download secrets names</div></div></div></div></div>'
-const commandBar = '<div id="searchKVContainer" class="azc-toolbarButton-container"><div class="azc-formElementContainer"><div class="fxc-base azc-control azc-editableControl azc-validatableControl azc-inputbox azc-textBox azc-validatableControl-none" data-control="true" data-editable="true" data-canfocus="true"><div class="azc-inputbox-wrapper azc-textBox-wrapper" tabindex="-1"><input id="searchKV" class="azc-input azc-formControl azc-validation-border" type="text" aria-multiline="false" placeholder="Filter by secret name..."><label class="fxs-hide-accessible-label" aria-atomic="true"></label></div></div></div><label class="azc-text-sublabel msportalfx-tooltip-overflow" data-bind="untrustedContent: $data" aria-hidden="true"></label></div></div>'
-
-function addDownloadBtn() {
-    if($('div[id="downloadBtnContainer"]').length > 0) {
-        if(DEBUG) console.log(`Length of download button Container : {$('div[id="downloadBtnContainer"]').length}`);
-        removeDownloadBtn();
-    }
-
-    $('.fxs-commandBar > ul').append(downloadBtn);
-
-    $('#downloadBtn').on('click',function(e) {
-        downloadKV();
-    });
-}
+const commandBar = '<div id="searchKVContainer" class="azc-formElementSubLabelContainer" style="display: -webkit-flex; -webkit-align-items:center;"><div class="azc-formElementContainer"><div class="fxc-base azc-control azc-editableControl azc-validatableControl azc-inputbox azc-textBox azc-validatableControl-none" data-control="true" data-editable="true" data-canfocus="true"><div class="azc-inputbox-wrapper azc-textBox-wrapper" tabindex="-1"><input id="searchKV" class="azc-input azc-formControl azc-validation-border" type="text" aria-multiline="false" placeholder="Filter by secret name..."><label class="fxs-hide-accessible-label" aria-atomic="true"></label></div></div></div><label class="azc-text-sublabel msportalfx-tooltip-overflow" data-bind="untrustedContent: $data" aria-hidden="true"></label></div></div>'
 
 function addSearchBar() {
     if($('div[id="searchKVContainer"]').length > 0) {
@@ -93,7 +75,7 @@ function addSearchBar() {
 
     $('.fxs-commandBar > ul')
         .append(commandBar)
-        .append('<a id="resultCount"></a>');
+        .append('<a id="resultCount" style="display: -webkit-flex; -webkit-align-items:center;"></a>');
 
     $('#searchKV').on('keypress',function(e) {
         if(e.which == 13) {
@@ -107,12 +89,6 @@ function removeSearchBar() {
     if(DEBUG) console.log("Invoke removeSearchBar()");
     $('div[id="searchKVContainer"]').remove();
     $('#resultCount').remove();
-}
-
-function removeDownloadBtn() {
-    if(DEBUG) console.log("Invoke removeDownloadBtn()");
-    $('#searchKV').off();
-    $('div[id="downloadBtnContainer"]').remove();
 }
 
 function searchKV(valueToSearch) {
@@ -134,23 +110,6 @@ function displayResultsCounted(count) {
     } else {
         $("#resultCount").text(`${count} result(s)`);
     }
-}
-
-function downloadKV() {
-    let keyvaults = $('.azc-grid-groupdata tr td:first-child');
-    let kvAsString = "";
-    for(let i = 0; i < keyvaults.length; i++) {
-        kvAsString += keyvaults[i].innerText + ';';
-    }
-
-    var hiddenElement = document.createElement('a');
-    const fileName = $('.fxs-blade-title h2').text() + '.txt';
-
-    hiddenElement.href = 'data:attachment/text,' + encodeURI(kvAsString);
-    hiddenElement.target = '_blank';
-    hiddenElement.download = fileName;
-    hiddenElement.click();
-    document.remove(hiddenElement);
 }
 
 /*
